@@ -32,7 +32,8 @@ class TestAddQCMetrics(unittest.TestCase):
         np.testing.assert_array_equal(adata.obs["nFeatue"].values, [2, 2, 2])
         np.testing.assert_array_equal(adata.obs["nCount"].values, [4, 6, 11])
         np.testing.assert_array_equal(adata.obs["nCount_mt"].values, [1, 2, 5])
-        np.testing.assert_allclose(adata.obs["percent.mt"].values, [25.0, 33.333333, 45.454545], rtol=1e-4)
+        np.testing.assert_allclose(adata.obs["percent.mt"].values, 
+                                   [25.0, 33.333333, 45.454545], rtol=1e-4)
 
     def test_qc_metrics_sparse(self):
         adata = self.create_test_adata(sparse=True)
@@ -44,17 +45,13 @@ class TestAddQCMetrics(unittest.TestCase):
         np.testing.assert_array_equal(adata.obs["nFeatue"].values, [2, 2, 2])
         np.testing.assert_array_equal(adata.obs["nCount"].values, [4, 6, 11])
         np.testing.assert_array_equal(adata.obs["nCount_mt"].values, [1, 2, 5])
-        np.testing.assert_allclose(adata.obs["percent.mt"].values, [25.0, 33.333333, 45.454545], rtol=1e-4)
+        np.testing.assert_allclose(adata.obs["percent.mt"].values, 
+                                   [25.0, 33.333333, 45.454545], rtol=1e-4)
 
     def test_custom_mt_pattern(self):
         adata = self.create_test_adata()
         add_qc_metrics(adata, mt_match_pattern="Gene")
         np.testing.assert_array_equal(adata.obs["nCount_mt"].values, [3, 4, 6])
-
-    def test_invalid_organism(self):
-        adata = self.create_test_adata()
-        with self.assertRaises(ValueError):
-            add_qc_metrics(adata, organism="unknown")
 
     def test_invalid_layer(self):
         adata = self.create_test_adata()

@@ -15,36 +15,42 @@ def add_qc_metrics(adata,
     Parameters:
     -----------
     adata : AnnData
-        The AnnData object containing single-cell or spatial transcriptomics data.
+        The AnnData object containing single-cell or spatial 
+        transcriptomics data.
     organism : str, optional
         The organism type. Default is "hs" (human). Use "mm" for mouse.
-        Determines the mitochondrial gene prefix ("MT-" for human, "mt-" for mouse).
+        Determines the mitochondrial gene prefix 
+        ("MT-" for human, "mt-" for mouse).
     mt_match_pattern : str, optional
         A custom pattern to identify mitochondrial genes. If None, it defaults
         to "MT-" for human or "mt-" for mouse based on the `organism` parameter.
+        Takes precedence over the default patterns.
+        If provided, it should match the prefix of mitochondrial gene names in 
+        `adata.var_names`.
     layer : str, optional
-        The name of the layer in `adata.layers` to use for calculations. If None,
-        the default `adata.X` matrix is used.
+        The name of the layer in `adata.layers` to use for calculations. 
+        If None, the default `adata.X` matrix is used.
 
     Modifies:
     ---------
     adata.obs : pandas.DataFrame
         Adds the following QC metrics as new columns:
         - "nFeatue": Number of genes with non-zero expression for each cell.
-        - "nCount": Total counts (sum of all gene expression values) for each cell.
+        - "nCount": Total counts (sum of all gene expression values) 
+            for each cell.
         - "nCount_mt": Total counts for mitochondrial genes for each cell.
-        - "percent.mt": Percentage of counts in mitochondrial genes for each cell.
+        - "percent.mt": Percentage of counts in mitochondrial genes 
+            for each cell.
 
     Raises:
     -------
     ValueError
-        If the `organism` is not recognized or if the specified `layer` is not found
-        in `adata.layers`.
+        If the specified `layer` is not found in `adata.layers`.
 
     Notes:
     ------
-    - If the input matrix (`adata.X` or the specified layer) is dense, it is converted
-      to a sparse matrix for efficient computation.
+    - If the input matrix (`adata.X` or the specified layer) is dense, 
+        it is converted to a sparse matrix for efficient computation.
     - Mitochondrial genes are identified based on the `mt_match_pattern`.
 
     Example:
@@ -58,8 +64,7 @@ def add_qc_metrics(adata,
             mt_match_pattern = "MT-"
         elif organism == "mm":
             mt_match_pattern = "mt-"
-        else:
-            raise ValueError("Unknown organism")
+
     if layer is None:
         test_matrix = adata.X
     else:
