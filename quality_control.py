@@ -79,7 +79,7 @@ def add_qc_metrics(adata,
         test_matrix = csr_matrix(test_matrix)
 
     # Calculate total number of genes with values > 0 for each cell
-    adata.obs["nFeatue"] = np.array((test_matrix > 0).sum(axis=1)).flatten()
+    adata.obs["nFeature"] = np.array((test_matrix > 0).sum(axis=1)).flatten()
     # Calculate the sum of counts for all genes for each cell
     adata.obs["nCount"] = np.array(test_matrix.sum(axis=1)).flatten()
     # Identify mitochondrial genes based on the match pattern
