@@ -124,11 +124,15 @@ def get_qc_summary_table(
     def compute_stats(df):
         stat_vals = []
         for col_name in stat_columns_list:
+            # Check if the column exists in the DataFrame
             if col_name in df.columns:
+                # Ensure the column is numeric
                 if not pd.api.types.is_numeric_dtype(df[col_name]):
                     raise TypeError(f"Column '{col_name}' must be numeric to compute statistics.")
+                # Compute median and MAD (median absolute deviation)
                 median = df[col_name].median()
                 mad = median_abs_deviation(df[col_name], nan_policy='omit')
+                # Collect statistics for this column
                 col_stats = [
                     col_name,
                     df[col_name].mean(),
@@ -140,7 +144,9 @@ def get_qc_summary_table(
                 ]
                 stat_vals.append(col_stats)
             else:
+                # Raise error if column is missing
                 raise ValueError(f"Column '{col_name}' not found in adata.obs")
+        # Return DataFrame with statistics for all columns
         return pd.DataFrame(
             stat_vals,
             columns=[
@@ -152,16 +158,19 @@ def get_qc_summary_table(
 
     obs_df = adata.obs
     summary_table = pd.DataFrame()
+    # If no sample_column, compute stats for all data
     if sample_column is None:
         stat_df = compute_stats(obs_df)
         stat_df["Sample"] = "All"
         summary_table = stat_df
     else:
+        # Otherwise, compute stats for each sample group
         samples_list = pd.unique(obs_df[sample_column])
         for current_sample in samples_list:
             sample_df = obs_df[obs_df[sample_column] == current_sample]
             stat_df = compute_stats(sample_df)
             stat_df["Sample"] = current_sample
             summary_table = pd.concat([summary_table, stat_df])
+    # Reset index and store in adata.uns
     summary_table = summary_table.reset_index(drop=True)
     adata.uns["qc_summary_table"] = summary_table
