@@ -3,20 +3,39 @@ import pandas as pd
 import os 
 import numpy as np
 from scipy.sparse import issparse, csr_matrix
+from quality_control import add_qc_metrics
+from scipy.stats import median_abs_deviation
+from anndata import AnnData
 
 os.chdir("/Users/bombina2/github/Reg_Ax/ST_workflow")
 
-adata = sc.read_h5ad("/Users/bombina2/github/Reg_Ax/CCBR/output/vizium_test.h5ad")
-atlas_adata = sc.read_h5ad("/Users/bombina2/github/Reg_Ax/CCBR/output/example/lung_atlas.h5ad")
+#adata = sc.read_h5ad("/Users/bombina2/github/Reg_Ax/CCBR/output/vizium_test.h5ad")
+adata = sc.read_h5ad("/Users/bombina2/github/Reg_Ax/CCBR/output/example/lung_atlas.h5ad")
 
 def get_qc_summary_table(
-    adata, 
-    n_mad=5, 
-    upper_quantile=0.95, 
-    lower_quantile=0.05, 
-    stat_columns_list=["nFeature", "nCount", "percent.mt"],
-    sample_column=None
-):
+    adata: AnnData,
+    n_mad: int = 5,
+    upper_quantile: float = 0.95,
+    lower_quantile: float = 0.05,
+    stat_columns_list: list = ["nFeature", "nCount", "percent.mt"],
+    sample_column: str = None
+) -> None:
+    """
+    Compute summary statistics for quality control metrics in an AnnData object 
+    and store the result in adata.uns['qc_summary_table'].
+
+    Parameters:
+        adata (AnnData): The AnnData object containing the data.
+        n_mad (int): Number of MADs to use for upper/lower thresholds.
+        upper_quantile (float): Upper quantile to compute (e.g., 0.95).
+        lower_quantile (float): Lower quantile to compute (e.g., 0.05).
+        stat_columns_list (list): List of column names to compute statistics for.
+        sample_column (str, optional): Column name to group by sample. 
+        If None, computes for all data.
+
+    Returns:
+        None. The summary table is stored in adata.uns['qc_summary_table'].
+    """
     def compute_stats(df):
         stat_vals = []
         for col_name in stat_columns_list:
@@ -24,7 +43,7 @@ def get_qc_summary_table(
                 if not pd.api.types.is_numeric_dtype(df[col_name]):
                     raise TypeError(f"Column '{col_name}' must be numeric to compute statistics.")
                 median = df[col_name].median()
-                mad = df[col_name].mad()
+                mad = median_abs_deviation(df[col_name], nan_policy='omit')
                 col_stats = [
                     col_name,
                     df[col_name].mean(),
@@ -59,7 +78,14 @@ def get_qc_summary_table(
             stat_df = compute_stats(sample_df)
             stat_df["Sample"] = current_sample
             summary_table = pd.concat([summary_table, stat_df])
-    return summary_table
+    summary_table = summary_table.reset_index(drop=True)
+    adata.uns["qc_summary_table"] = summary_table
+
+
+add_qc_metrics(adata, organism="hs")
+
+get_qc_summary_table(adata, sample_column=None)
+
 
 
 sc.pl.violin(

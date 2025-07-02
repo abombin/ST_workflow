@@ -35,7 +35,7 @@ def add_qc_metrics(adata,
     ---------
     adata.obs : pandas.DataFrame
         Adds the following QC metrics as new columns:
-        - "nFeatue": Number of genes with non-zero expression for each cell.
+        - "nFeature": Number of genes with non-zero expression for each cell.
         - "nCount": Total counts (sum of all gene expression values) 
             for each cell.
         - "nCount_mt": Total counts for mitochondrial genes for each cell.
@@ -56,7 +56,7 @@ def add_qc_metrics(adata,
     Example:
     --------
     >>> add_qc_metrics(adata, organism="hs")
-    >>> print(adata.obs[["nFeatue", "nCount", "nCount_mt", "percent.mt"]])
+    >>> print(adata.obs[["nFeature", "nCount", "nCount_mt", "percent.mt"]])
     """
     # identify mitochondrial genes pattern
     if mt_match_pattern is None:
