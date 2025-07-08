@@ -187,14 +187,14 @@ def plot_qc_metrics(
     rotation=None
 ):
     """
-    Generate violin plots for quality control (QC) metrics from an AnnData object.
+    Generate violin plots for quality control metrics from an AnnData object.
 
     Parameters
     ----------
-    adata : AnnData
-        The annotated data matrix (from Scanpy).
+    adata : AnnData object
     metric_name : list of str, optional
-        List of metric names to plot (default: ["nCount", "nFeature", "percent.mt"]).
+        List of metric names to plot 
+        default: ["nCount", "nFeature", "percent.mt"].
     group_column : str or None, optional
         Column name in adata.obs to group the data by (default: None).
     log : bool, optional
@@ -208,8 +208,10 @@ def plot_qc_metrics(
     Returns
     -------
     dict
-        If group_column is None, returns a dictionary with keys 'figure' and 'axes' for the whole dataset.
-        If group_column is provided, returns a dictionary mapping each group to its own {'figure', 'axes'} dict for the subsetted AnnData.
+        If group_column is None, returns a dictionary with keys 
+        'figure' and 'axes' for the whole dataset.
+        If group_column is provided, returns a dictionary mapping each group 
+        to its own {'figure', 'axes'} dict for the subsetted AnnData.
     """
     if group_column is not None:
         results = {}
